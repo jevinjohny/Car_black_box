@@ -13,6 +13,7 @@
 
 void dashboard (void)
 {
+  //hello
   //read speed from pot 
   unsigned long sum=0;
   for (int i=0; i < 20; i++)// reads 20 values and finds the average of it
