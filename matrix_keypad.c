@@ -1,5 +1,6 @@
 #include <xc.h>
 #include "matrix_keypad.h"
+#define _XTAL_FREQ 20000000
 
 void init_matrix_keypad(void)
 {
@@ -88,7 +89,7 @@ unsigned char scan_key(void)
 unsigned char read_switches(unsigned char detection_type)
 {
 	static unsigned char once = 1, key;
-
+        __delay_ms(100);
 	if (detection_type == STATE_CHANGE)
 	{
 		key = scan_key();

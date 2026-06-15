@@ -50,7 +50,7 @@ void dashboard (void)
     page=1;
     CLEAR_DISP_SCREEN;
     clcd_print("MAIN MENU", LINE1(0));
-    __delay_ms(100);
+    __delay_ms(1000);
   }
 
   if (col) // values to be transmitted if collision is detected
@@ -58,14 +58,19 @@ void dashboard (void)
     speed=0;
     arr[4]='C';
   }
-
-  speed_to_str(speed, arr); // converts integer value to string
-  clcd_print(arr, LINE2(0));
-  clcd_putch(arr[4], LINE2(6));
+  if (!menutoggle)
+  {
+    get_time();
+    display_time();
+    speed_to_str(speed, arr); // converts integer value to string
+    clcd_print(arr, LINE2(0));
+    clcd_putch(arr[4], LINE2(6));
+  }
 }
 
 
 //main menu
+
 void menu(void)
 {
   unsigned char key =read_switches(STATE_CHANGE); //reads digital keypad
@@ -73,10 +78,10 @@ void menu(void)
   if (key == MK_SW6)//page down
   {
     CLEAR_DISP_SCREEN;
-    if (page <= 3 )
+    if (page <= 4 )
       page++;
     else
-      page=4;
+      page=5;
   } else if (key == MK_SW5)//page up
   {
     CLEAR_DISP_SCREEN;
@@ -95,33 +100,82 @@ void menu(void)
     return;
 
   //page scrolling
-  switch (page) 
+  switch (page) {
+  case 1:
   {
-    case 1:
+    clcd_print("1.VIEW LOG", LINE1(0));
+    clcd_print("2.CLEAR LOG", LINE2(0));
+    clcd_putch('<',LINE1(14));
+    break;
+  }
+  case 2:
+  {
+    clcd_print("2.CLEAR LOG", LINE1(0));
+    clcd_print("3.DWNLD LOG", LINE2(0));
+    clcd_putch('<',LINE1(14));
+    break;
+  }
+  case 3:
+  {
+    clcd_print("3.DWNLD LOG", LINE1(0));
+    clcd_print("4.SET TIME", LINE2(0));
+    clcd_putch('<',LINE1(14));
+    break;
+  }
+  case 4:
+  {
+    clcd_print("4.SET TIME", LINE1(0));
+    clcd_print("5.CHNG PSWRD", LINE2(0));
+    clcd_putch('<',LINE1(14));
+    break;
+  }
+  case 5:
+  {
+    clcd_print("6.CHNG PSWRD", LINE1(0));
+    clcd_putch('<',LINE1(14));
+    break;
+  }
+  }
+}
+
+void display_time(void)
+{
+  clcd_print(time, LINE2(8));
+
+  if (clock_reg[0] & 0x40)
+  {
+    if (clock_reg[0] & 0x20)
     {
-      clcd_print("1.VIEW LOG", LINE1(0));
-      clcd_print("2.CLEAR LOG", LINE2(0));
-      break;
-    }
-    case 2:
+      clcd_print("PM", LINE1(13));
+    } else
     {
-      clcd_print("2.CLEAR LOG", LINE1(0));
-      clcd_print("3.DWNLD LOG", LINE2(0));
-      break;
-    }
-    case 3:
-    {
-      clcd_print("3.DWNLD LOG", LINE1(0));
-      clcd_print("4.SET TIME", LINE2(0));
-      break;
-    }
-    case 4:
-    {
-      clcd_print("4.SET TIME", LINE1(0));
-      clcd_print("5.CHNG PSWRD", LINE2(0));
-      break;
+      clcd_print("AM", LINE1(13));
     }
   }
+}
+
+static void get_time(void)
+{
+  clock_reg[0] = read_ds1307(HOUR_ADDR);
+  clock_reg[1] = read_ds1307(MIN_ADDR);
+  clock_reg[2] = read_ds1307(SEC_ADDR);
+
+  if (clock_reg[0] & 0x40)
+  {
+    time[0] = '0' + ((clock_reg[0] >> 4) & 0x01);
+    time[1] = '0' + (clock_reg[0] & 0x0F);
+  } else
+  {
+    time[0] = '0' + ((clock_reg[0] >> 4) & 0x03);
+    time[1] = '0' + (clock_reg[0] & 0x0F);
+  }
+  time[2] = ':';
+  time[3] = '0' + ((clock_reg[1] >> 4) & 0x0F);
+  time[4] = '0' + (clock_reg[1] & 0x0F);
+  time[5] = ':';
+  time[6] = '0' + ((clock_reg[2] >> 4) & 0x0F);
+  time[7] = '0' + (clock_reg[2] & 0x0F);
+  time[8] = '\0';
 }
 
 

@@ -10,6 +10,13 @@ extern unsigned char col;
 extern unsigned char page;
 extern unsigned char menutoggle;
 
+extern unsigned char clock_reg[3];
+extern unsigned char calender_reg[4];
+extern unsigned char time[9];
+extern unsigned char date[11];
+
+static void get_time(void);
+void display_time(void);
 void dashboard (void);
 void menu(void);
 void speed_to_str(unsigned int speed, char *str);

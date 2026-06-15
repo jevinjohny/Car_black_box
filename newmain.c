@@ -23,6 +23,11 @@ unsigned char col = 0;
 unsigned char page = 1;
 unsigned char menutoggle = 0;
 
+unsigned char clock_reg[3];
+unsigned char calender_reg[4];
+unsigned char time[9];
+unsigned char date[11];
+
 void main(void)
 {
   init_i2c();
@@ -34,10 +39,12 @@ void main(void)
   TRISA5=1; //POT
 
   arr[4]='N'; // starting value for gear
+  CLEAR_DISP_SCREEN;
   clcd_print("SPEED G TIME", LINE1(0));
 
   while (1)
   {
+    
     if (!menutoggle)
     {
       dashboard();
