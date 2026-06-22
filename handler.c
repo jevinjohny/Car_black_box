@@ -1,11 +1,7 @@
-#include "adc.h"
+
 #include "clcd.h"
-#include "ds1307.h"
-#include "eeprom.h"
-#include "i2c.h"
 #include "main.h"
 #include "matrix_keypad.h"
-#include "uart.h"
 #include "login.h"
 #include "log.h"
 #include <builtins.h>
@@ -13,8 +9,10 @@
 #include <xc.h>
 
 // main menu
+
 void menu(void)
 {
+
   unsigned char key = read_switches(STATE_CHANGE); // reads digital keypad
 
   if (key == MK_SW1) // page down
