@@ -15,6 +15,8 @@
 #include "ds1307.h"
 #include "uart.h"
 #include  "main.h"
+#include "timer0.h"
+#include "dashboard.h"
 
 unsigned int speed = 0;
 unsigned int val = 0;
@@ -36,6 +38,11 @@ void main(void)
   init_matrix_keypad();
   init_ds1307();
   init_uart();
+  
+  init_timer0();
+
+  GIE = 1;
+  PEIE = 1;
   TRISA5=1; //POT
 
   arr[4]='N'; // starting value for gear
