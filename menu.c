@@ -1,4 +1,3 @@
-
 #include "clcd.h"
 #include "main.h"
 #include "matrix_keypad.h"
@@ -9,7 +8,6 @@
 #include <xc.h>
 
 // main menu
-
 void menu(void)
 {
 
