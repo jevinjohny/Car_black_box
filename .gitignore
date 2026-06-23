@@ -21,3 +21,4 @@ cmake/**/CMake*
 out/
 /.vscode/
 /cmake/
+/git-diagnostics-2026-06-23-1458.zip

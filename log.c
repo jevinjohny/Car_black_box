@@ -1,4 +1,4 @@
-#include"log.h"
+#include "log.h"
 
 unsigned char logindex = 0;
 unsigned char logcount = 0;
@@ -144,3 +144,4 @@ void downloadlog(void)
     j++;
   }
 }
+

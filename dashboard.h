@@ -4,5 +4,6 @@
 void dashboard(void);
 void display_time(void);
 void speed_to_str(unsigned int speed, char *str);
+void settime(void);
 
 #endif

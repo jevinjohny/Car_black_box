@@ -1,3 +1,4 @@
+#include <builtins.h>
 #include <xc.h>
 #include "dashboard.h"
 #include "main.h"
@@ -7,6 +8,7 @@
 #include "clcd.h"
 #include "ds1307.h"
 #include "matrix_keypad.h"
+
 
 
 unsigned int speed = 0;
@@ -20,7 +22,6 @@ unsigned char date[11];
 
 
 static void get_time(void);
-
 
 
 void dashboard(void) 
@@ -96,6 +97,7 @@ void dashboard(void)
     clcd_print(arr, LINE2(0));
     clcd_putch(arr[4], LINE2(6));
   }
+  
 }
 
 void display_time(void) 
@@ -157,4 +159,144 @@ void speed_to_str(unsigned int speed, char *str)
 
   str[2] = ones + '0';
   str[3] = '\0';
+}
+
+void settime(void)
+{
+  unsigned char sec;
+  unsigned char min;
+  unsigned char hr;
+  
+  hr = read_ds1307(HOUR_ADDR);
+  min = read_ds1307(MIN_ADDR);
+  sec = read_ds1307(SEC_ADDR);
+
+  hr=(hr>>4)*10 +(hr & 0x0F);
+  min=(min>>4)*10 +(min & 0x0F);
+  sec=(sec>>4)*10 +(sec & 0x0F);
+  
+  clcd_print("SET  TIME", LINE1(0));
+  __delay_ms(1000);
+
+  unsigned char mode=0;
+
+  while(1)
+  {
+    CLEAR_DISP_SCREEN;
+    unsigned char key=read_switches(STATE_CHANGE);
+
+    if (key==MK_SW6)
+    {
+      mode++;
+      if (mode>2)
+      mode=2;
+    }
+    else if (key==MK_SW7)
+    {
+      mode--;
+      if (mode==255)
+      mode=0;
+    }
+    else if (key==MK_SW5)
+    {
+      sec= (((sec/10)<<4 | (sec %10)));
+      min= (((min/10)<<4 | (min %10)));
+      hr= (((hr/10)<<4 | (hr %10)));
+
+      write_ds1307(SEC_ADDR,  sec);
+      write_ds1307(MIN_ADDR,  min);
+      write_ds1307(HOUR_ADDR,  hr);
+
+      CLEAR_DISP_SCREEN;
+      clcd_print("TIME SET!...", LINE1(0));
+      __delay_ms(1000);
+      CLEAR_DISP_SCREEN;
+      return;
+      
+    }
+
+    switch (mode)
+    {
+      case 0:
+      {
+        if (key==MK_SW1)
+        {
+          hr++;
+          if (hr>23)
+          {
+            hr=0;
+          }
+        }
+        else if (key==MK_SW2)
+        {
+          hr--;
+          if (hr==255)
+          hr=23;
+        }
+        break;
+      }
+      case 1:
+      {
+        if (key==MK_SW1)
+        {
+          min++;
+          if (min>59)
+          {
+            min=0;
+          }
+        }
+        else if (key==MK_SW2)
+        {
+          min--;
+          if (min==255)
+          min=59;
+        }
+        break;
+      }
+      case 2:
+      {
+        if (key==MK_SW1)
+        {
+          sec++;
+          if (sec>59)
+          {
+            sec=0;
+          }
+        }
+        else if (key==MK_SW2)
+        {
+          sec--;
+          if (sec==255)
+          sec=59;
+        }
+        break;
+      }
+    }
+    time[0] = (hr / 10) + '0';
+    time[1] = (hr % 10) + '0';
+    time[2] = ':';
+
+    time[3] = (min / 10) + '0';
+    time[4] = (min % 10) + '0';
+    time[5] = ':';
+
+    time[6] = (sec / 10) + '0';
+    time[7] = (sec % 10) + '0';
+    time[8] = '\0';
+
+    clcd_print(time, LINE2(0));
+
+    if (mode==0)
+    {
+      clcd_print("EDIT HOURS  ", LINE1(0));
+    }
+    else if (mode==1)
+    {
+      clcd_print("EDIT MINUTES", LINE1(0));
+    }
+    else if (mode==2)
+    {
+      clcd_print("EDIT SEC    ", LINE1(0));
+    }
+  }
 }

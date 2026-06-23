@@ -10,7 +10,6 @@
 // main menu
 void menu(void)
 {
-
   unsigned char key = read_switches(STATE_CHANGE); // reads digital keypad
 
   if (key == MK_SW1) // page down
@@ -84,7 +83,7 @@ void menu(void)
     clcd_putch('<', LINE1(14));
     if (key == MK_SW5)
     {
-      // settime();
+      settime();
     }
     break;
   }
