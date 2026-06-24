@@ -18,8 +18,8 @@ void login(void)
   LED = 0;
 
   CLEAR_DISP_SCREEN;
-  clcd_print("ENTER PASSWORD", LINE1(0));
-  clcd_print("_", LINE2(0));
+  clcd_print((const unsigned char *)"ENTER PASSWORD", LINE1(0));
+  clcd_print((const unsigned char *)"_", LINE2(0));
   unsigned int delay = 1000;
   unsigned int delay1 = 0;
   unsigned int delay2 = 0;
@@ -32,12 +32,12 @@ void login(void)
     {
       keyflag = 1;
       pass[ind++] = 0;
-      clcd_print("*", LINE2(ind - 1));
+      clcd_print((const unsigned char *)"*", LINE2(ind - 1));
     } else if (key == MK_SW2 && ind < PSWD_LEN)
     {
       keyflag = 1;
       pass[ind++] = 1;
-      clcd_print("*", LINE2(ind - 1));
+      clcd_print((const unsigned char *)"*", LINE2(ind - 1));
     }
 
     if (ind == PSWD_LEN)
@@ -56,9 +56,9 @@ void login(void)
       CLEAR_DISP_SCREEN;
       if (passcount >= 4)
       {
-        clcd_print("ATTEMPT FINISHED", LINE1(0));
+        clcd_print((const unsigned char *)"ATTEMPT FINISHED", LINE1(0));
         led_threshold = 10;
-        clcd_print("RESET BOARD", LINE2(0));
+        clcd_print((const unsigned char *)"RESET BOARD", LINE2(0));
 
         while (1);
       } else
@@ -66,28 +66,28 @@ void login(void)
         if (passcheck)
         {
           passcount++;
-          clcd_print("WRONG PASSWORD", LINE1(0));
+          clcd_print((const unsigned char *)"WRONG PASSWORD", LINE1(0));
           if (passcount == 1)
           {
-            clcd_print("4 CHANCE REM", LINE2(0));
+            clcd_print((const unsigned char *)"4 CHANCE REM", LINE2(0));
             led_threshold = 8000;
             __delay_ms(500);
 
           } else if (passcount == 2)
           {
-            clcd_print("3 CHANCE REM", LINE2(0));
+            clcd_print((const unsigned char *)"3 CHANCE REM", LINE2(0));
             led_threshold = 6000;
             __delay_ms(500);
 
           } else if (passcount == 3)
           {
-            clcd_print("2 CHANCE REM", LINE2(0));
+            clcd_print((const unsigned char *)"2 CHANCE REM", LINE2(0));
             led_threshold = 4000;
             __delay_ms(500);
 
           } else if (passcount == 4)
           {
-            clcd_print("1 CHANCE REM", LINE2(0));
+            clcd_print((const unsigned char *)"1 CHANCE REM", LINE2(0));
             led_threshold = 2000;
             __delay_ms(500);
           }
@@ -95,7 +95,7 @@ void login(void)
         }
         else
         {
-          clcd_print("ACCESS GRANTED", LINE1(0));
+          clcd_print((const unsigned char *)"ACCESS GRANTED", LINE1(0));
           LED = 0;
           led_threshold = 0;
           atflag = 0;
@@ -111,7 +111,7 @@ void login(void)
       for (unsigned long int d = 0; d < 50000; d++)
         ;
       CLEAR_DISP_SCREEN;
-      clcd_print("ENTER PASSWORD", LINE1(0));
+      clcd_print((const unsigned char *)"ENTER PASSWORD", LINE1(0));
       clcd_print("_", LINE2(0));
       //      led_threshold=0;
       ind = 0;
@@ -120,9 +120,9 @@ void login(void)
     if (keyflag == 0)
     {
       if (blinkflag)
-        clcd_print(" ", LINE2(ind));
+        clcd_print((const unsigned char *)" ", LINE2(ind));
       else
-        clcd_print("_", LINE2(ind));
+        clcd_print((const unsigned char *)"_", LINE2(ind));
     }
   }
 }
@@ -131,7 +131,7 @@ void login(void)
 void changepassword(void)
 {
   CLEAR_DISP_SCREEN;
-  clcd_print("NEW PASSWORD", LINE1(0));
+  clcd_print((const unsigned char *)"NEW PASSWORD", LINE1(0));
 
   unsigned char i = 0;
   __delay_ms(1000);
