@@ -1,5 +1,6 @@
 
 #include <xc.h>
+#include "i2c.h"
 
 void init_i2c(void)
 {

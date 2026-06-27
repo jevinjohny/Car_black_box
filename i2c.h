@@ -8,5 +8,7 @@ void i2c_rep_start(void);
 void i2c_stop(void);
 void i2c_write(unsigned char data);
 unsigned char i2c_read(void);
+void i2c_ack(void);
+void i2c_no_ack(void);
 
 #endif

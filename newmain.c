@@ -11,7 +11,6 @@
 #include "clcd.h"
 #include "adc.h"
 #include "matrix_keypad.h"
-#include "eeprom.h"
 #include "ds1307.h"
 #include "uart.h"
 #include  "main.h"

@@ -5,7 +5,6 @@
 #include "clcd.h"
 #include "matrix_keypad.h"
 #include "main.h"
-#include "eeprom.h"
 #include "uart.h"
 #include "clcd.h"
 #include "ds1307.h"     

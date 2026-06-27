@@ -29,8 +29,8 @@ void dashboard(void)
     sum = sum + read_adc(4);
   }
   val = sum / 20; // average
-  speed =
-          (((unsigned long) val * MAXSPEED) / 1023); // digital speed value to 0-249
+  
+  speed = (((unsigned long) val * MAXSPEED) / 1023); // digital speed value to 0-249
 
   unsigned char key = read_switches(STATE_CHANGE); // reads digital keypad
 
@@ -101,17 +101,6 @@ void dashboard(void)
 void display_time(void)
 {
   clcd_print(time, LINE2(8));
-
-  // if (clock_reg[0] & 0x40)
-  // {
-  //   if (clock_reg[0] & 0x20)
-  //   {
-  //     clcd_print("PM", LINE1(13));
-  //   } else
-  //   {
-  //     clcd_print("AM", LINE1(13));
-  //   }
-  // }
 }
 
 static void get_time(void)

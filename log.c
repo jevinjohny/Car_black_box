@@ -1,10 +1,13 @@
+#include "main.h"
 #include "log.h"
+#include "clcd.h"
+#include "externaleeprom.h"
+#include <builtins.h>
 
 unsigned char logindex = 0;
 unsigned char logcount = 0;
 
-void store_log(void)
-{
+void store_log(void) {
   unsigned char addr;
   unsigned char speedstr[4];
   unsigned char i;
@@ -12,45 +15,40 @@ void store_log(void)
   speed_to_str(speed, speedstr);
 
   addr = logindex * LOGSIZE;
-  
+
   // time
-  for (i = 0; i < 8; i++)
-  {
-    write_internal_eeprom(addr++, time[i]);
+  for (i = 0; i < 8; i++) {
+    eeprom_write_byte(addr++, time[i]);
   }
 
   // space
-  write_internal_eeprom(addr++, ' ');
+  eeprom_write_byte(addr++, ' ');
 
   // event
-  write_internal_eeprom(addr++, 'G');
-  write_internal_eeprom(addr++, arr[4]);
+  eeprom_write_byte(addr++, 'G');
+  eeprom_write_byte(addr++, arr[4]);
 
   // space
-  write_internal_eeprom(addr++, ' ');
+  eeprom_write_byte(addr++, ' ');
 
   // speed
-  write_internal_eeprom(addr++, speedstr[0]);
-  write_internal_eeprom(addr++, speedstr[1]);
-  write_internal_eeprom(addr++, speedstr[2]);
+  eeprom_write_byte(addr++, speedstr[0]);
+  eeprom_write_byte(addr++, speedstr[1]);
+  eeprom_write_byte(addr++, speedstr[2]);
 
   logindex++;
 
-  if (logindex >= MAXLOGS)
-  {
+  if (logindex >= MAXLOGS) {
     logindex = 0;
   }
 
-  if (logcount < MAXLOGS)
-  {
+  if (logcount < MAXLOGS) {
     logcount++;
   }
 }
 
-void viewlog(void)
-{
-  if (logcount == 0)
-  {
+void viewlog(void) {
+  if (logcount == 0) {
     CLEAR_DISP_SCREEN;
     clcd_print("NO LOGS", LINE1(0));
     __delay_ms(1000);
@@ -60,11 +58,9 @@ void viewlog(void)
 
   unsigned char start;
 
-  if (logcount < MAXLOGS)
-  {
+  if (logcount < MAXLOGS) {
     start = 0;
-  } else
-  {
+  } else {
     start = logindex;
   }
 
@@ -72,18 +68,16 @@ void viewlog(void)
   unsigned char rdlog[LOGSIZE + 1];
 
   unsigned char j = 0;
-  while (j < logcount)
-  {
-    unsigned char logno;
-
-    logno = (start + j) % MAXLOGS;
+  while (j < logcount) {
+    unsigned char logno = (start + j) % MAXLOGS;
     adr = logno * LOGSIZE;
 
-    for (int i = 0; i < LOGSIZE; i++)
-    {
-      rdlog[i] = read_internal_eeprom(adr);
-      adr++;
-    }
+//     for (int i = 0; i < LOGSIZE; i++) {
+//       rdlog[i] = read_internal_eeprom(adr);
+//       adr++;
+//     }
+
+    eeprom_read_sequence(adr, rdlog, LOGSIZE);
 
     rdlog[LOGSIZE] = '\0';
 
@@ -98,21 +92,18 @@ void viewlog(void)
   CLEAR_DISP_SCREEN;
 }
 
-void downloadlog(void)
-{
-  if (logcount == 0)
-  {
+void downloadlog(void) {
+  CLEAR_DISP_SCREEN;
+  if (logcount == 0) {
     puts("NO logs\n");
     return;
   }
 
   unsigned char start;
 
-  if (logcount < MAXLOGS)
-  {
+  if (logcount < MAXLOGS) {
     start = 0;
-  } else
-  {
+  } else {
     start = logindex;
   }
 
@@ -121,18 +112,18 @@ void downloadlog(void)
   unsigned char rdlog[LOGSIZE + 1];
 
   unsigned char j = 0;
-  while (j < logcount)
-  {
+  while (j < logcount) {
     unsigned char logno;
 
     logno = (start + j) % MAXLOGS;
     adr = logno * LOGSIZE;
 
-    for (int i = 0; i < LOGSIZE; i++)
-    {
-      rdlog[i] = read_internal_eeprom(adr);
-      adr++;
-    }
+    // for (int i = 0; i < LOGSIZE; i++) {
+    //   rdlog[i] = read_internal_eeprom(adr);
+    //   adr++;
+    // }
+
+    eeprom_read_sequence(adr, rdlog, LOGSIZE);
 
     rdlog[LOGSIZE] = '\0';
 
@@ -143,5 +134,8 @@ void downloadlog(void)
 
     j++;
   }
+  clcd_print("DOWNLOAD LOGS", LINE1(0));
+  clcd_print("FINISHED", LINE2(0));
+  __delay_ms(1000);
+  CLEAR_DISP_SCREEN;
 }
-

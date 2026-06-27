@@ -89,7 +89,7 @@ unsigned char scan_key(void)
 unsigned char read_switches(unsigned char detection_type)
 {
 	static unsigned char once = 1, key;
-        __delay_ms(100);
+        __delay_ms(10);
 	if (detection_type == STATE_CHANGE)
 	{
 		key = scan_key();
