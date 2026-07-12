@@ -13,7 +13,7 @@ void menu(void)
 {
     unsigned char key = read_switches(STATE_CHANGE); // reads digital keypad
 
-    if (key == MK_SW1) // page down
+    if (key == MK_SW8) // page down
     {
         CLEAR_DISP_SCREEN;
         if (page <= 4)
@@ -21,7 +21,7 @@ void menu(void)
         else
             page = 5;
     }
-    else if (key == MK_SW2) // page up
+    else if (key == MK_SW7) // page up
     {
         CLEAR_DISP_SCREEN;
         if (page > 1)
@@ -34,6 +34,13 @@ void menu(void)
         CLEAR_DISP_SCREEN;
         menutoggle = 0;
         clcd_print("SPEED G TIME", LINE1(0));
+    }
+    else if (key==MK_SW6)
+    {
+        CLEAR_DISP_SCREEN;
+        menutoggle = 0;
+        clcd_print("SPEED G TIME", LINE1(0));
+
     }
 
     if (!menutoggle)

@@ -27,14 +27,6 @@ void i2c_idle(void)
 	SSPIF = 0;
 }
 
-void i2c_ack(void)
-{
-	if (ACKSTAT)
-	{
-		/* Do debug print here if required */
-	}
-}
-
 void i2c_start(void)
 {
 	SEN = 1;

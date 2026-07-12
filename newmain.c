@@ -45,8 +45,9 @@ void main(void)
   TRISA5=1; //POT
 
   arr[4]='N'; // starting value for gear
+  
   CLEAR_DISP_SCREEN;
-  clcd_print("SPEED G TIME", LINE1(0));
+  clcd_print("SPEED G    TIME", LINE1(0));
 
   while (1)
   {

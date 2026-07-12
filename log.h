@@ -10,7 +10,7 @@
 #include "ds1307.h"     
 #include "dashboard.h"
 
-#define LOGSIZE 15
+#define LOGSIZE 14
 #define MAXLOGS 10
 
 void store_log(void);

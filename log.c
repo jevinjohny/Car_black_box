@@ -2,6 +2,7 @@
 #include "log.h"
 #include "clcd.h"
 #include "externaleeprom.h"
+#include "matrix_keypad.h"
 #include <builtins.h>
 
 unsigned char logindex = 0;
@@ -25,7 +26,6 @@ void store_log(void) {
   eeprom_write_byte(addr++, ' ');
 
   // event
-  eeprom_write_byte(addr++, 'G');
   eeprom_write_byte(addr++, arr[4]);
 
   // space
@@ -38,17 +38,21 @@ void store_log(void) {
 
   logindex++;
 
-  if (logindex >= MAXLOGS) {
+  if (logindex >= MAXLOGS) 
+  {
     logindex = 0;
   }
 
-  if (logcount < MAXLOGS) {
+  if (logcount < MAXLOGS) 
+  {
     logcount++;
   }
 }
 
-void viewlog(void) {
-  if (logcount == 0) {
+void viewlog(void) 
+{
+  if (logcount == 0) 
+  {
     CLEAR_DISP_SCREEN;
     clcd_print("NO LOGS", LINE1(0));
     __delay_ms(1000);
@@ -58,9 +62,12 @@ void viewlog(void) {
 
   unsigned char start;
 
-  if (logcount < MAXLOGS) {
+  if (logcount < MAXLOGS) 
+  {
     start = 0;
-  } else {
+  } 
+  else 
+  {
     start = logindex;
   }
 
@@ -68,62 +75,90 @@ void viewlog(void) {
   unsigned char rdlog[LOGSIZE + 1];
 
   unsigned char j = 0;
-  while (j < logcount) {
+  while (j < logcount) 
+  {
     unsigned char logno = (start + j) % MAXLOGS;
     adr = logno * LOGSIZE;
 
-//     for (int i = 0; i < LOGSIZE; i++) {
-//       rdlog[i] = read_internal_eeprom(adr);
-//       adr++;
-//     }
+    for (int i = 0; i < LOGSIZE; i++) 
+    {
+      rdlog[i] = read_external(adr);
+      adr++;
+    }
 
-    eeprom_read_sequence(adr, rdlog, LOGSIZE);
-
+    // eeprom_read_sequence(adr, rdlog, LOGSIZE);
     rdlog[LOGSIZE] = '\0';
 
     CLEAR_DISP_SCREEN;
-    clcd_print("LOG  TIME G  SPD", LINE1(0));
-    clcd_putch((j + 1) + '0', LINE1(4));
-    clcd_print(rdlog, LINE2(0));
+    clcd_print("#   TIME   G  SPD", LINE1(0));
+    clcd_putch((j ) + '0', LINE2(0));
+    clcd_print(rdlog, LINE2(2));
 
-    j++;
-    __delay_ms(2000);
+    unsigned char key = read_switches(STATE_CHANGE);
+    if (key==MK_SW8)
+    {
+      j++;
+      if (j==logcount)
+      {
+        j=logcount-1;
+      }
+    }
+    else if (key==MK_SW7)
+    {
+      j--;
+      if (j == 255)
+      {
+        j=0;
+      }
+    }
+    else if (key==MK_SW6)
+    {
+      CLEAR_DISP_SCREEN;
+      return;
+    }
   }
   CLEAR_DISP_SCREEN;
 }
 
-void downloadlog(void) {
+void downloadlog(void) 
+{
   CLEAR_DISP_SCREEN;
-  if (logcount == 0) {
+  if (logcount == 0) 
+  {
     puts("NO logs\n");
     return;
   }
 
   unsigned char start;
 
-  if (logcount < MAXLOGS) {
+  if (logcount < MAXLOGS) 
+  {
     start = 0;
-  } else {
+  } 
+  else 
+  {
     start = logindex;
   }
 
-  puts("# TIME     GEAR SPD\r\n");
+  puts("#    TIME  G  SPD\r\n");
   unsigned char adr = 0;
   unsigned char rdlog[LOGSIZE + 1];
 
   unsigned char j = 0;
-  while (j < logcount) {
+  while (j < logcount) 
+  {
     unsigned char logno;
 
     logno = (start + j) % MAXLOGS;
     adr = logno * LOGSIZE;
 
-    // for (int i = 0; i < LOGSIZE; i++) {
-    //   rdlog[i] = read_internal_eeprom(adr);
-    //   adr++;
-    // }
+    for (int i = 0; i < LOGSIZE; i++) 
+    {
+      rdlog[i] = read_external(adr);
+      adr++;
+    }
 
-    eeprom_read_sequence(adr, rdlog, LOGSIZE);
+    // eeprom_read_sequence(adr, rdlog, LOGSIZE);
 
     rdlog[LOGSIZE] = '\0';
 

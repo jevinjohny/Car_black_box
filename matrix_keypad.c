@@ -89,13 +89,13 @@ unsigned char scan_key(void)
 unsigned char read_switches(unsigned char detection_type)
 {
 	static unsigned char once = 1, key;
-        __delay_ms(10);
-	if (detection_type == STATE_CHANGE)
-	{
-		key = scan_key();
-		if(key != 0xFF && once  )
+        __delay_ms(5);
+		if (detection_type == STATE_CHANGE)
 		{
-			once = 0;
+			key = scan_key();
+			if(key != 0xFF && once  )
+			{
+				once = 0;
 			return key;
 		}
 		else if(key == 0xFF)
@@ -105,6 +105,7 @@ unsigned char read_switches(unsigned char detection_type)
 	}
 	else if (detection_type == LEVEL_CHANGE)
 	{
+
 		return scan_key();
 	}
 
