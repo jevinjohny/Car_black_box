@@ -3,43 +3,36 @@
 
 void init_adc(void)
 {
-	/* Selecting right justified ADRES Registers order */
+	// Right justify ADC result registers for 10-bit resolution
 	ADFM = 1;
 
-	/* 
-	 * Acqusition time selection bits 
-	 * Set for 4 Tad
-	 */
+	// Set acquisition time to 4 Tad cycles
 	ACQT2 = 0;
 	ACQT1 = 1;
 	ACQT0 = 0;
 
-	/*
-	 * Selecting the conversion clock of Fosc / 32 -> 1.6usecs -> 1Tad
-	 * Our device frequency is 20 MHz
-	 */
+	// Set conversion clock to Fosc/32 (1.6 µsecs per Tad) for 20 MHz device
 	ADCS0 = 0;
 	ADCS1 = 1;
 	ADCS2 = 0;
 
-	/* Stop the conversion to start with */
+	// Initialize: stop any ongoing conversion
 	GODONE = 0;
 
 	
 
-	/* Voltage reference bit as VSS */
+	// Set voltage references: VSS and VDD
 	VCFG1 = 0;
-	/* Voltage reference bit as VDD */
 	VCFG0 = 0;
         
-        /* AN4 analog, others digital */
+    // Configure AN4 as analog input, others as digital
 	ADCON1 = 0x0B;
 
-	/* Just clearing the ADRESH & ADRESL registers, for time pass */
+	// Clear ADC result registers
 	ADRESH = 0;
 	ADRESL = 0;
 
-	/* Turn ON the ADC module */
+	// Enable ADC module
 	ADON = 1;
 }
 
@@ -47,12 +40,13 @@ unsigned short read_adc(unsigned char channel)
 {
 	unsigned short reg_val;
 
-	/*select the channel*/
+	// Select the ADC channel
 	ADCON0 = (ADCON0 & 0xC3) | (channel << 2);
 
-	/* Start the conversion */
+	// Start conversion and wait for completion
 	GO = 1;
 	while (GO);
+	// Combine high and low bytes for 10-bit result
 	reg_val = (ADRESH << 8) | ADRESL; 
 
 	return reg_val;

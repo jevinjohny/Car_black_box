@@ -1,42 +1,25 @@
-
 #include "ds1307.h"
 #include "i2c.h"
 #include <xc.h>
 
-/* 
- * DS1307 Slave address
- * D0  -  Write Mode
- * D1  -  Read Mode
- */
+// DS1307 I2C Slave Address: 0xD0 (write) or 0xD1 (read)
 
 void init_ds1307(void)
 {
 	unsigned char dummy;
 
-	/* Setting the CH bit of the RTC to Stop the Clock */
+	// Stop the RTC clock by setting CH bit in seconds register
 	dummy = read_ds1307(SEC_ADDR);
 	write_ds1307(SEC_ADDR, dummy | 0x80); 
 
-	/* Seting 12 Hr Format */
+	// Set 12-hour time format
 	dummy = read_ds1307(HOUR_ADDR);
 	write_ds1307(HOUR_ADDR, dummy | 0x40); 
 
-	/* 
-	 * Control Register of DS1307
-	 * Bit 7 - OUT
-	 * Bit 6 - 0
-	 * Bit 5 - OSF
-	 * Bit 4 - SQWE
-	 * Bit 3 - 0
-	 * Bit 2 - 0
-	 * Bit 1 - RS1
-	 * Bit 0 - RS0
-	 * 
-	 * Seting RS0 and RS1 as 11 to achive SQW out at 32.768 KHz
-	 */ 
+	// Configure control register: SQW output at 32.768 kHz (RS1=1, RS0=1)
 	write_ds1307(CNTL_ADDR, 0x93); 
 
-	/* Clearing the CH bit of the RTC to Start the Clock */
+	// Start the RTC clock by clearing CH bit in seconds register
 	dummy = read_ds1307(SEC_ADDR);
 	write_ds1307(SEC_ADDR, dummy & 0x7F); 
 
@@ -44,6 +27,7 @@ void init_ds1307(void)
 
 void write_ds1307(unsigned char address, unsigned char data)
 {
+	// Send I2C START, slave address (write mode), register address, and data
 	i2c_start();
 	i2c_write(SLAVE_WRITE);
 	i2c_write(address);
@@ -55,11 +39,14 @@ unsigned char read_ds1307(unsigned char address)
 {
 	unsigned char data;
 
+	// Send START, write slave address and register address
 	i2c_start();
 	i2c_write(SLAVE_WRITE);
 	i2c_write(address);
+	// Send repeated START for read operation
 	i2c_rep_start();
 	i2c_write(SLAVE_READ);
+	// Read data from register and send STOP condition
 	data = i2c_read();
 	i2c_stop();
 

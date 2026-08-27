@@ -7,108 +7,119 @@
 #include <pic18.h>
 #include <xc.h>
 
-// main menu
+// Main menu system with 5 pages of options
 
 void menu(void)
 {
-    unsigned char key = read_switches(STATE_CHANGE); // reads digital keypad
+  // Read keypad input
+  unsigned char key = read_switches(STATE_CHANGE);
 
-    if (key == MK_SW8) // page down
-    {
-        CLEAR_DISP_SCREEN;
-        if (page <= 4)
-            page++;
-        else
-            page = 5;
-    }
-    else if (key == MK_SW7) // page up
-    {
-        CLEAR_DISP_SCREEN;
-        if (page > 1)
-            page--;
-        else
-            page = 1;
-    }
-    else if (key == MK_SW4)
-    {
-        CLEAR_DISP_SCREEN;
-        menutoggle = 0;
-        clcd_print("SPEED G TIME", LINE1(0));
-    }
-    else if (key==MK_SW6)
-    {
-        CLEAR_DISP_SCREEN;
-        menutoggle = 0;
-        clcd_print("SPEED G TIME", LINE1(0));
+  // Page down navigation (SW8)
+  if (key == MK_SW8)
+  {
+    CLEAR_DISP_SCREEN;
+    if (page <= 4)
+      page++;
+    else
+      page = 5;
+  }
+  // Page up navigation (SW7)
+  else if (key == MK_SW7)
+  {
+    CLEAR_DISP_SCREEN;
+    if (page > 1)
+      page--;
+    else
+      page = 1;
+  }
+  // Exit to dashboard (SW4)
+  else if (key == MK_SW4)
+  {
+    CLEAR_DISP_SCREEN;
+    menutoggle = 0;
+    clcd_print("SPEED G TIME", LINE1(0));
+  }
+  // Exit to dashboard (SW6)
+  else if (key==MK_SW6)
+  {
+    CLEAR_DISP_SCREEN;
+    menutoggle = 0;
+    clcd_print("SPEED G TIME", LINE1(0));
+  }
 
-    }
+  // Exit if menu not toggled
+  if (!menutoggle)
+    return;
 
-    if (!menutoggle)
-        return;
-
-    // page scrolling
-    switch (page)
+  // Display menu options based on current page
+  switch (page)
+  {
+  case 1:
+  {
+    // Page 1: View Log option
+    clcd_print("1.VIEW LOG", LINE1(0));
+    clcd_print("2.CLEAR LOG", LINE2(0));
+    clcd_putch('<', LINE1(14));
+    if (key == MK_SW5)
     {
-    case 1:
+      viewlog();
+    }
+    break;
+  }
+  case 2:
+  {
+    // Page 2: Clear Log option
+    clcd_print("2.CLEAR LOG", LINE1(0));
+    clcd_print("3.DWNLD LOG", LINE2(0));
+    clcd_putch('<', LINE1(14));
+    if (key == MK_SW5)
     {
-        clcd_print("1.VIEW LOG", LINE1(0));
-        clcd_print("2.CLEAR LOG", LINE2(0));
-        clcd_putch('<', LINE1(14));
-        if (key == MK_SW5)
-        {
-            viewlog();
-        }
-        break;
+      // Reset log counters and clear
+      logcount = 0;
+      logindex = 0;
+      CLEAR_DISP_SCREEN;
+      clcd_print("LOG CLEARED...", LINE1(0));
+      __delay_ms(1000);
+      CLEAR_DISP_SCREEN;
     }
-    case 2:
+    break;
+  }
+  case 3:
+  {
+    // Page 3: Download Log option
+    clcd_print("3.DWNLD LOG", LINE1(0));
+    clcd_print("4.SET TIME", LINE2(0));
+    clcd_putch('<', LINE1(14));
+    if (key == MK_SW5)
     {
-        clcd_print("2.CLEAR LOG", LINE1(0));
-        clcd_print("3.DWNLD LOG", LINE2(0));
-        clcd_putch('<', LINE1(14));
-        if (key == MK_SW5)
-        {
-            logcount = 0;
-            logindex = 0;
-            CLEAR_DISP_SCREEN;
-            clcd_print("LOG CLEARED...", LINE1(0));
-            __delay_ms(1000);
-            CLEAR_DISP_SCREEN;
-        }
-        break;
+      downloadlog();
     }
-    case 3:
+    break;
+  }
+  case 4:
+  {
+    // Page 4: Set Time option
+    clcd_print("4.SET TIME", LINE1(0));
+    clcd_print("5.CHNG PSWRD", LINE2(0));
+    clcd_putch('<', LINE1(14));
+    if (key == MK_SW5)
     {
-        clcd_print("3.DWNLD LOG", LINE1(0));
-        clcd_print("4.SET TIME", LINE2(0));
-        clcd_putch('<', LINE1(14));
-        if (key == MK_SW5)
-        {
-            downloadlog();
-        }
-        break;
+      settime();
     }
-    case 4:
+    break;
+  }
+  case 5:
+  {
+    // Page 5: Change Password option
+    clcd_print("5.CHNG PSWRD", LINE1(0));
+    clcd_putch('<', LINE1(14));
+    if (key == MK_SW5)
     {
-        clcd_print("4.SET TIME", LINE1(0));
-        clcd_print("5.CHNG PSWRD", LINE2(0));
-        clcd_putch('<', LINE1(14));
-        if (key == MK_SW5)
-        {
-            settime();
-        }
-        break;
+      changepassword();
     }
-    case 5:
-    {
-        clcd_print("5.CHNG PSWRD", LINE1(0));
-        clcd_putch('<', LINE1(14));
-        if (key == MK_SW5)
-        {
-            changepassword();
-        }
-        break;
-    }
-    }
+    break;
+  }
+  }
 }
 
 

@@ -2,7 +2,7 @@
 
 ### Embedded Firmware Control System
 
-Blackbox is a compact embedded project built for a PIC-based system with a display-driven interface, sensor input, and menu-based control flow. The firmware combines peripheral drivers, real-time handling, and user interaction logic into a single cohesive application.
+A Car Black Box System developed using the PIC18F4580 microcontroller and Embedded C to monitor and record critical vehicle events in real-time. This system functions similarly to an aircraft black box, providing valuable data for accident analysis, driver behavior monitoring, and vehicle diagnostics.
 
 ---
 

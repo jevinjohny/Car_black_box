@@ -20,7 +20,8 @@ unsigned char date[11];
 unsigned char prevgear;
 static void get_time(void);
 
-void dashboard(void) {
+void dashboard(void)
+{
   // read speed from pot
   unsigned long sum = 0;
   for (int i = 0; i < 20; i++) // reads 20 values and finds the average of it
@@ -29,8 +30,7 @@ void dashboard(void) {
   }
   val = sum / 20; // average
 
-  speed =
-      (((unsigned long)val * MAXSPEED) / 1023); // digital speed value to 0-249
+  speed = (((unsigned long)val * MAXSPEED) / 1023); // digital speed value to 0-249
 
   unsigned char key = read_switches(STATE_CHANGE); // reads digital keypad
 
@@ -38,7 +38,9 @@ void dashboard(void) {
   {
     speed = 0;
     arr[4] = 'C';
-  } else {
+  }
+  else
+  {
     // gear and collision switch
     if (key == MK_SW1) // increments gear from N->1->2->3->4->5->6->R
     {
@@ -49,13 +51,14 @@ void dashboard(void) {
       else if (arr[4] == '6')
         arr[4] = 'R';
 
-      if (prevgear != arr[4]) {
+      if (prevgear != arr[4])
+      {
         get_time();
         store_log();
         prevgear = arr[4];
       }
-
-    } else if (key == MK_SW2) // decrements gear from R->6->5->4->3->2->1->N
+    }
+    else if (key == MK_SW2) // decrements gear from R->6->5->4->3->2->1->N
     {
       if (arr[4] == 'R')
         arr[4] = '6';
@@ -64,18 +67,21 @@ void dashboard(void) {
       else if (arr[4] == '1')
         arr[4] = 'N';
 
-      if (prevgear != arr[4]) {
+      if (prevgear != arr[4])
+      {
         get_time();
         store_log();
         prevgear = arr[4];
       }
-    } else if (key == MK_SW3) // collision switch
+    }
+    else if (key == MK_SW3) // collision switch
     {
       col = 1; // collision flag is set
       speed = 0;
       arr[4] = 'C';
 
-      if (prevgear != arr[4]) {
+      if (prevgear != arr[4])
+      {
         get_time();
         store_log();
         prevgear = arr[4];
@@ -96,7 +102,8 @@ void dashboard(void) {
     __delay_ms(1000);
   }
 
-  if (!menutoggle) {
+  if (!menutoggle)
+  {
     get_time();
     display_time();
     speed_to_str(speed, arr); // converts integer value to string
@@ -105,17 +112,24 @@ void dashboard(void) {
   }
 }
 
-void display_time(void) { clcd_print(time, LINE2(8)); }
+void display_time(void)
+{
+  clcd_print(time, LINE2(8));
+}
 
-static void get_time(void) {
+static void get_time(void)
+{
   clock_reg[0] = read_ds1307(HOUR_ADDR);
   clock_reg[1] = read_ds1307(MIN_ADDR);
   clock_reg[2] = read_ds1307(SEC_ADDR);
 
-  if (clock_reg[0] & 0x40) {
+  if (clock_reg[0] & 0x40)
+  {
     time[0] = '0' + ((clock_reg[0] >> 4) & 0x01);
     time[1] = '0' + (clock_reg[0] & 0x0F);
-  } else {
+  }
+  else
+  {
     time[0] = '0' + ((clock_reg[0] >> 4) & 0x03);
     time[1] = '0' + (clock_reg[0] & 0x0F);
   }
@@ -130,7 +144,8 @@ static void get_time(void) {
 
 // converts integer value to string
 
-void speed_to_str(unsigned int speed, char *str) {
+void speed_to_str(unsigned int speed, char *str)
+{
   unsigned char hundreds;
   unsigned char tens;
   unsigned char ones;
@@ -145,8 +160,7 @@ void speed_to_str(unsigned int speed, char *str) {
   else
     str[0] = hundreds + '0';
 
-  if (hundreds == 0 &&
-      tens == 0) // replaces leading zeros in tens place with ' '
+  if (hundreds == 0 && tens == 0) // replaces leading zeros in tens place with ' '
     str[1] = ' ';
   else
     str[1] = tens + '0';
@@ -155,7 +169,8 @@ void speed_to_str(unsigned int speed, char *str) {
   str[3] = '\0';
 }
 
-void settime(void) {
+void settime(void)
+{
   CLEAR_DISP_SCREEN;
   unsigned char sec = 0;
   unsigned char min = 0;
@@ -175,20 +190,24 @@ void settime(void) {
   unsigned char mode = 0;
 
   CLEAR_DISP_SCREEN;
-  while (1) {
+  while (1)
+  {
     unsigned char key = read_switches(STATE_CHANGE);
 
-    if (key == MK_SW3) {
+    if (key == MK_SW3)
+    {
       mode++;
       if (mode > 2)
         mode = 0;
-    } else if (key == MK_SW6) {
-      
+    }
+    else if (key == MK_SW6)
+    {
 
       CLEAR_DISP_SCREEN;
       return;
-
-    } else if (key == MK_SW5) {
+    }
+    else if (key == MK_SW5)
+    {
       sec = (((sec / 10) << 4 | (sec % 10)));
       min = (((min / 10) << 4 | (min % 10)));
       hr = (((hr / 10) << 4 | (hr % 10)));
@@ -207,16 +226,22 @@ void settime(void) {
       return;
     }
 
-    switch (mode) {
-    case 0: {
-      if (key == MK_SW1) {
+    switch (mode)
+    {
+    case 0:
+    {
+      if (key == MK_SW1)
+      {
         CLEAR_DISP_SCREEN;
 
         hr++;
-        if (hr > 23) {
+        if (hr > 23)
+        {
           hr = 0;
         }
-      } else if (key == MK_SW2) {
+      }
+      else if (key == MK_SW2)
+      {
         CLEAR_DISP_SCREEN;
         hr--;
         if (hr == 255)
@@ -224,14 +249,19 @@ void settime(void) {
       }
       break;
     }
-    case 1: {
-      if (key == MK_SW1) {
+    case 1:
+    {
+      if (key == MK_SW1)
+      {
         CLEAR_DISP_SCREEN;
         min++;
-        if (min > 59) {
+        if (min > 59)
+        {
           min = 0;
         }
-      } else if (key == MK_SW2) {
+      }
+      else if (key == MK_SW2)
+      {
         CLEAR_DISP_SCREEN;
         min--;
         if (min == 255)
@@ -239,14 +269,19 @@ void settime(void) {
       }
       break;
     }
-    case 2: {
-      if (key == MK_SW1) {
+    case 2:
+    {
+      if (key == MK_SW1)
+      {
         CLEAR_DISP_SCREEN;
         sec++;
-        if (sec > 59) {
+        if (sec > 59)
+        {
           sec = 0;
         }
-      } else if (key == MK_SW2) {
+      }
+      else if (key == MK_SW2)
+      {
         CLEAR_DISP_SCREEN;
         sec--;
         if (sec == 255)
@@ -269,11 +304,16 @@ void settime(void) {
 
     clcd_print(time, LINE2(0));
 
-    if (mode == 0) {
+    if (mode == 0)
+    {
       clcd_print((const unsigned char *)"EDIT HOURS  ", LINE1(0));
-    } else if (mode == 1) {
+    }
+    else if (mode == 1)
+    {
       clcd_print((const unsigned char *)"EDIT MINUTES", LINE1(0));
-    } else if (mode == 2) {
+    }
+    else if (mode == 2)
+    {
       clcd_print((const unsigned char *)"EDIT SEC    ", LINE1(0));
     }
   }

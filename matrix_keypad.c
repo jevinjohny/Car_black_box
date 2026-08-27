@@ -4,20 +4,22 @@
 
 void init_matrix_keypad(void)
 {
-	/* Config PORTB as digital */
+	// Configure PORTB as digital I/O (disable analog)
 	ADCON1 = 0x0F;
 
-	/* Set Rows (RB7 - RB5) as Outputs and Columns (RB4 - RB1) as Inputs */
+	// Configure rows (RB7-RB5) as outputs, columns (RB4-RB1) as inputs
 	TRISB = 0x1E;
 
-	/* Set PORTB input as pull up for columns */
+	// Enable pull-ups on column inputs
 	RBPU = 0;
 
+	// Initialize row pins to high
 	MATRIX_KEYPAD_PORT = MATRIX_KEYPAD_PORT | 0xE0;
 }
 
 unsigned char scan_key(void)
 {
+	// Scan Row 1: Set ROW1 low, others high
 	ROW1 = LO;
 	ROW2 = HI;
 	ROW3 = HI;

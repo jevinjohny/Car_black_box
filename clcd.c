@@ -3,38 +3,42 @@
 
 void clcd_write(unsigned char byte, unsigned char control_bit)
 {
+  // Set RS pin (0=command, 1=data)
   CLCD_RS = control_bit;
+  // Write data to LCD port
   CLCD_PORT = byte;
 
-  /* Should be atleast 200ns */
+  // Toggle enable signal (minimum 200ns pulse)
   CLCD_EN = HI;
   CLCD_EN = LO;
 
+  // Set port as input to read busy flag
   PORT_DIR = INPUT;
-  CLCD_RW = HI;
+  CLCD_RW = HI;    // Read mode
   CLCD_RS = INSTRUCTION_COMMAND;
 
+  // Wait for busy flag to clear
   do
   {
     CLCD_EN = HI;
     CLCD_EN = LO;
   } while (CLCD_BUSY);
 
+  // Restore to write mode
   CLCD_RW = LO;
   PORT_DIR = OUTPUT;
 }
 
 void init_clcd()
 {
-  /* Set PortD as output port for CLCD data */
+  // Configure PortD as output for LCD data bus
   TRISD = 0x00;
-  /* Set PortC as output port for CLCD control */
+  // Configure PortC (except RC7-RC5) as output for LCD control signals
   TRISC = TRISC & 0xF8;
 
   CLCD_RW = LO;
 
-
-  /* Startup Time for the CLCD controller */
+  // Wait for LCD power-up (minimum 30ms)
   __delay_ms(30);
 
   /* The CLCD Startup Sequence */
